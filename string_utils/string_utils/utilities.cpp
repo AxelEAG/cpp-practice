@@ -2,7 +2,7 @@
 #include <string>
 #include <string_view>
 
-constexpr std::string to_lower(std::string_view s)
+std::string to_lower(std::string_view s)
 {
 	std::string copy{};
 	copy.reserve(s.size());
@@ -15,7 +15,7 @@ constexpr std::string to_lower(std::string_view s)
 	return copy;
 }
 
-constexpr std::string to_upper(std::string_view s)
+std::string to_upper(std::string_view s)
 {
 	std::string copy{};
 	copy.reserve(s.size());
@@ -26,6 +26,23 @@ constexpr std::string to_upper(std::string_view s)
 		else
 			copy += c;
 	return copy;
+}
+
+std::string reverse(std::string_view s)
+{
+	std::string copy{};
+	copy.reserve(s.size());
+
+	for (std::size_t i{ s.size()}; i > 0; --i)
+	{
+		copy += s[i - 1];
+	}
+	return copy;
+}
+
+int main()
+{
+	return 0;
 }
 
 // toupper, tolower, reverse, countVowels, countConsonants, isPalindrome,
