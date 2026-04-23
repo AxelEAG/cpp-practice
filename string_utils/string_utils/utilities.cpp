@@ -1,6 +1,7 @@
 
 #include <string>
 #include <string_view>
+#include <cassert>
 
 std::string to_lower(std::string_view s)
 {
@@ -42,6 +43,34 @@ std::string reverse(std::string_view s)
 
 int main()
 {
+	// For now won't check on non-ASCII
+	assert(to_lower("hello") == "hello");
+	assert(to_lower("Hello") == "hello");
+	assert(to_lower("HELLO") == "hello");
+	assert(to_lower("H") == "h");
+	assert(to_lower("h") == "h");
+	assert(to_lower("") == "");
+	assert(to_lower("1HeLLo123") == "1hello123");
+	assert(to_lower("!@#") == "!@#");
+	assert(to_lower(" Hi ") == " hi ");
+
+	assert(to_upper("HELLO") == "HELLO");
+	assert(to_upper("hELLO") == "HELLO");
+	assert(to_upper("hello") == "HELLO");
+	assert(to_upper("H") == "H");
+	assert(to_upper("h") == "H");
+	assert(to_upper("") == "");
+	assert(to_upper("1HeLlo123") == "1HELLO123");
+	assert(to_upper("!@#") == "!@#");
+	assert(to_upper(" Hi ") == " HI ");
+
+	assert(reverse("HELLO") == "OLLEH");
+	assert(reverse("HE") == "EH");
+	assert(reverse("H") == "H");
+	assert(reverse("") == "");
+	assert(reverse("a b ") == " b a");
+	assert(reverse(reverse("hello")) == "hello");
+
 	return 0;
 }
 
