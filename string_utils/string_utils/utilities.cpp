@@ -55,6 +55,23 @@ std::string trim(std::string_view s, char toTrim=' ')
 	return copy;
 }
 
+std::string trim_left(std::string_view s, char toTrim = ' ')
+{
+	std::size_t i{ 0 };
+	while (i < s.size() && s[i] == toTrim)
+		++i;
+
+	return std::string{ s.substr(i) };
+}
+
+std::string trim_right(std::string_view s, char toTrim = ' ')
+{
+	std::size_t i { s.size() };
+	while (i > 0 && s[i - 1] == toTrim)
+		--i;
+
+	return std::string{ s.substr(0, i) };
+}
 
 int main()
 {
@@ -93,6 +110,22 @@ int main()
 	assert(trim("h") == "h");
 	assert(trim("", '.') == "");
 
+	assert(trim_left("hello") == "hello");
+	assert(trim_left("  hello") == "hello");
+	assert(trim_left("a hello") == "a hello");
+	assert(trim_left(",,,hello", ',') == "hello");
+	assert(trim_left(",.,hello", ',') == ".,hello");
+	assert(trim_left("h") == "h");
+	assert(trim_left("", '.') == "");
+
+
+	assert(trim_right("hello") == "hello");
+	assert(trim_right("hello a") == "hello a");
+	assert(trim_right("hello  ") == "hello");
+	assert(trim_right("hello,,,", ',') == "hello");
+	assert(trim_right("hello,.,", ',') == "hello,.");
+	assert(trim_right("h") == "h");
+	assert(trim_right("", '.') == "");
 
 	return 0;
 }
