@@ -73,6 +73,34 @@ std::string trim_right(std::string_view s, char toTrim = ' ')
 	return std::string{ s.substr(0, i) };
 }
 
+bool isDigit(char c)
+{
+	return(c >= '0' && c <= '9');
+}
+
+// Checks if string is just a number
+bool isNumber(std::string_view s)
+{
+	if (s.size() == 0)
+		return false;
+
+	std::size_t i{ 0 };
+	if (s[i] == '+' || s[i] == '-')
+		++i;
+
+	for ( ; i < s.size(); ++i)
+	{
+		if (!isDigit(s[i])
+			return false;
+	}
+
+	return true;
+}
+
+// countVowels, countConsonants, isPalindrome,
+// contains
+// replace, startsWith, endsWith, split, 
+
 int main()
 {
 	// For now won't check on non-ASCII
@@ -127,9 +155,23 @@ int main()
 	assert(trim_right("h") == "h");
 	assert(trim_right("", '.') == "");
 
+	assert(isDigit('1') == true);
+	assert(isDigit('7') == true);
+	assert(isDigit('a') == false);
+	assert(isDigit('#') == false);
+	assert(isDigit(' ') == false);
+
+	assert(isNumber("1") == true);
+	assert(isNumber("137123") == true);
+	assert(isNumber("+1341") == true);
+	assert(isNumber("-137841") == true);
+	assert(isNumber("s137841") == false);
+	assert(isNumber("-1378s41") == false);
+	assert(isNumber("-137841#") == false);
+	assert(isNumber("137841#") == false);
+
+
+
+
 	return 0;
 }
-
-// countVowels, countConsonants, isPalindrome,
-// trim, trimleft, trimright, contains
-// replace, startsWith, endsWith, split, 
