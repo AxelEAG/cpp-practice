@@ -41,6 +41,21 @@ std::string reverse(std::string_view s)
 	return copy;
 }
 
+
+std::string trim(std::string_view s, char toTrim=' ')
+{
+	std::string copy{};
+	copy.reserve(s.size());
+
+	for (char c : s)
+	{
+		if (c != toTrim)
+			copy += c;
+	}
+	return copy;
+}
+
+
 int main()
 {
 	// For now won't check on non-ASCII
@@ -71,9 +86,17 @@ int main()
 	assert(reverse("a b ") == " b a");
 	assert(reverse(reverse("hello")) == "hello");
 
+	assert(trim("hello") == "hello");
+	assert(trim(" he1lo") == "he1lo");
+	assert(trim(",hello@,", ',') == "hello@");
+	assert(trim(" ,hel,l,o, ", ',') == " hello ");
+	assert(trim("h") == "h");
+	assert(trim("", '.') == "");
+
+
 	return 0;
 }
 
-// toupper, tolower, reverse, countVowels, countConsonants, isPalindrome,
+// countVowels, countConsonants, isPalindrome,
 // trim, trimleft, trimright, contains
 // replace, startsWith, endsWith, split, 
