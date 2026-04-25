@@ -18,8 +18,8 @@
 
 struct Coord 
 {
-	int x{-1};
-	int y{-1};
+	int x{};
+	int y{};
 };
 
 // TODO: Make compatible with different sizes
@@ -149,32 +149,34 @@ public:
 	}
 
 	// TODO: Input validation
-	//		multiple inputs
-	//		not ints, eof,
+	// meaningless value, eof
+	// additional input
+	// extraction fails 
+	// extraction overflows
 	Coord getCoordFromUser() const
 	{
-		Coord c{};
+		int x{};
+		int y{};
 		while (true) {
-			while (c.y < 0 || c.y >= m_size)
+			while (y < 1 || y > m_size)
 			{
-				std::cout << "Input valid row (0-" << m_size - 1 << "): ";
-				std::cin >> c.y;
+				std::cout << "Input valid row (1-" << m_size << "): ";
+				std::cin >> y;
 			}
 
-			while (c.x < 0 || c.x >= m_size)
+			while (x < 1 || x > m_size)
 			{
-				std::cout << "Input valid column (0-" << m_size - 1 << "): ";
-				std::cin >> c.x;
+				std::cout << "Input valid column (1-" << m_size << "): ";
+				std::cin >> x;
 			}
-
-			if (get(c) == '-')
+			if (m_grid[y - 1][x - 1] == '-')
 				break;
 
 			std::cout << "Please enter a cell that hasn't been played. \n";
 		}
 		std::cout << '\n';
 
-		return c;
+		return Coord{x - 1, y - 1};
 	}
 
 };
@@ -184,7 +186,7 @@ int main()
 	const int size{ 3 };
 
 	Game game{ size };
-	std::cout << " Let's play some tic tac toe! \n \n";
+	std::cout << "Let's play some tic tac toe! \n \n";
 	
 	while (game.play())
 	{
