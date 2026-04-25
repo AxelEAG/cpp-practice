@@ -22,12 +22,6 @@ struct Coord
 	int y{-1};
 };
 
-struct Move
-{
-	Coord coord{};
-	char piece{ '-' };
-};
-
 // TODO: Make compatible with different sizes
 class Game
 {
@@ -43,21 +37,52 @@ private:
 public:
 	Game(int size = 3) : m_size{ size } { reset(); }
 
-	void set(Move& m) { m_grid[m.coord.y][m.coord.x] = m.piece;}
+	void set(Coord coord, char piece) { m_grid[coord.y][coord.x] = piece;}
 	char get(Coord coord) const { return m_grid[coord.y][coord.x]; }
 	int  getSize() const { return m_size; }
-	 
+
+	bool play()
+	{
+		bool isX{ true };
+		bool isTied{ true };
+		print();
+
+		for (int moves{ 0 }; moves < m_size * m_size; ++moves)
+		{
+			char piece{ isX ? 'X' : 'O' };
+			std::cout << "======= Player '" << piece << "' Turn! ======= \n";
+			set(getCoordFromUser(), piece);
+			print();
+			isX = !isX;
+			if (hasWon(piece))
+			{
+				std::cout << "Player '" << piece << "' won! \n \n";
+				isTied = false;
+				break;
+			}
+		}
+
+		if (isTied) std::cout << "Uh oh, it's a tie! \n \n";
+
+		std::cout << "Would you like to play again (y/n)? ";
+		char response{};
+		std::cin >> response;
+		std::cout << '\n';
+
+		return response == 'y' ? true : false;
+	}
+
 	void print() const
 	{
 		for (int i{ 0 }; i < m_size; ++i)
 		{
 			for (int j{ 0 }; j < m_size - 1; ++j)
 			{
-				std::cout << m_grid[i][j] << " | ";
+				std::cout << ' ' << m_grid[i][j] << ' ' << '|';
 			}
-			std::cout << m_grid[i][m_size - 1] << '\n'; // last one shouldn't have a '|'
+			std::cout << ' ' << m_grid[i][m_size - 1] << ' ' << '\n'; // last one shouldn't have a '|'
 			
-			if (i != m_size -1) std::cout << std::string(4*m_size - 2, '-');
+			if (i != m_size - 1) std::cout << std::string(4*m_size - 1, '-');
 			std::cout << '\n';
 		}
 		
@@ -159,20 +184,11 @@ int main()
 	const int size{ 3 };
 
 	Game game{ size };
-	bool isX{ true };
 	std::cout << " Let's play some tic tac toe! \n \n";
 	
-	game.print();
-
-	for (int moves{ 0 }; moves < 9; ++moves)
+	while (game.play())
 	{
-		char piece{ isX ? 'X' : 'O' };
-		std::cout << "======= Player '" << piece << "' Turn! ======= \n";
-		Move move{game.getCoordFromUser(), piece };
-		game.set(move);
-		game.print();
-		isX = !isX;
-	}
-
+		game.reset();
+	};
 	return 0;
 }
