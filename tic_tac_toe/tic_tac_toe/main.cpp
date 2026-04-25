@@ -21,6 +21,7 @@ struct Coord {
 	int y{};
 };
 
+// TODO: Make compatible with different sizes
 class Game
 {
 private:
@@ -75,11 +76,28 @@ public:
 
 };
 
+// TODO: Input validation
+//		multiple inputs
+//		not ints, eof,
+Coord getCoordFromUser()
+{
+	Coord c{};
+	std::cout << "Input x coordinate (0-3): ";
+	std::cin >> c.x;
+
+	std::cout << "Input y coordinate (0-3): ";
+	std::cin >> c.y;
+
+	return c;
+}
+
 int main()
 {
+
 	Game game{ 3 };
 	
 	game.print();
+
 	game.set(Coord { 0, 0 }, 'X');
 	game.set({ 1, 1 }, 'O');
 	game.set({ 2, 0 }, 'X');
