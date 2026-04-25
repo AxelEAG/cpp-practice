@@ -15,6 +15,11 @@
 
 #include <iostream>
 #include <string>
+#include <string_view>
+#include <format>
+#include <limits>
+#include <cstdlib>
+
 
 struct Coord 
 {
@@ -23,6 +28,7 @@ struct Coord
 };
 
 // TODO: Make compatible with different sizes
+// TODO: Initialize grid correctly
 class Game
 {
 private:
@@ -157,18 +163,11 @@ public:
 	{
 		int x{};
 		int y{};
-		while (true) {
-			while (y < 1 || y > m_size)
-			{
-				std::cout << "Input valid row (1-" << m_size << "): ";
-				std::cin >> y;
-			}
 
-			while (x < 1 || x > m_size)
-			{
-				std::cout << "Input valid column (1-" << m_size << "): ";
-				std::cin >> x;
-			}
+		while (true) {
+			int x{ getValidInput("row", m_size) };
+			int y{ getValidInput("column", m_size) };
+
 			if (m_grid[y - 1][x - 1] == '-')
 				break;
 
@@ -176,10 +175,61 @@ public:
 		}
 		std::cout << '\n';
 
-		return Coord{x - 1, y - 1};
+		return Coord { x - 1, y - 1};
 	}
 
+
+
 };
+
+void ignoreLine()
+{
+	std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}
+
+// returns true if extraction failed, false otherwise
+bool clearFailedExtraction()
+{
+	// Only proceed if extraction failed
+	if (std::cin)
+		return false;
+
+	// Halt program if user entered EOF
+	if (std::cin.eof())
+		std::exit(0);
+
+	std::cin.clear();
+	ignoreLine();
+
+	return true;
+}
+
+// returns true if had unextracted input and cleans it
+bool clearUnextractedInput()
+{
+	if (std::cin.peek() == '\n')
+		return false;
+
+	ignoreLine();
+	return true;
+}
+
+
+int getValidInput(std::string_view type, int max, int min=1)
+{
+	while (true)
+	{
+		std::cout << std::format("Input valid {} (1-{}): ", type, max);
+		int value{};
+		std::cin >> value;
+		if (clearFailedExtraction() || clearUnextractedInput())
+			continue;
+
+		if (value >= min && value <= max)
+			return value;
+	}
+
+}
 
 int main()
 {
