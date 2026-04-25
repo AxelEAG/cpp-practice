@@ -82,11 +82,13 @@ public:
 Coord getCoordFromUser()
 {
 	Coord c{};
+
 	std::cout << "Input x coordinate (0-3): ";
 	std::cin >> c.x;
-
+		
 	std::cout << "Input y coordinate (0-3): ";
 	std::cin >> c.y;
+	std::cout << '\n';
 
 	return c;
 }
@@ -95,13 +97,24 @@ int main()
 {
 
 	Game game{ 3 };
-	
+	bool isX{ true };
+	int count{ 0 };
 	game.print();
 
-	game.set(Coord { 0, 0 }, 'X');
-	game.set({ 1, 1 }, 'O');
-	game.set({ 2, 0 }, 'X');
-	game.set({ 0, 1 }, 'O');
+	while (count < 9)
+	{
+		Coord coord{ getCoordFromUser() };
+		game.set(coord, isX ? 'X' : 'O');
+		game.print();
+		isX = !isX;
+		++count;
+	}
+	game.print();
+
+	//game.set(Coord { 0, 0 }, 'X');
+	//game.set({ 1, 1 }, 'O');
+	//game.set({ 2, 0 }, 'X');
+	//game.set({ 0, 1 }, 'O');
 
 	game.print();
 
