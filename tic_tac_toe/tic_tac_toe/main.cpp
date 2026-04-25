@@ -16,9 +16,16 @@
 #include <iostream>
 #include <string>
 
-struct Coord {
-	int x{};
-	int y{};
+struct Coord 
+{
+	int x{-1};
+	int y{-1};
+};
+
+struct Move
+{
+	Coord coord{};
+	char piece{ '-' };
 };
 
 // TODO: Make compatible with different sizes
@@ -36,16 +43,10 @@ private:
 public:
 	Game(int size = 3) : m_size{ size } { reset(); }
 
-	void set(Coord c, char piece) { m_grid[c.y][c.x] = piece;}
-	char get(Coord c) const { return m_grid[c.y][c.x]; }
-	bool isEmpty(Coord c) const { return (get(c) == '-'); }
-
-	bool isValid(Coord c) const
-	{
-		return (c.x >= 0 && c.x < m_size)
-			&& (c.y >= 0 && c.y < m_size);
-	}
-
+	void set(Move& m) { m_grid[m.coord.y][m.coord.x] = m.piece;}
+	char get(Coord coord) const { return m_grid[coord.y][coord.x]; }
+	int  getSize() const { return m_size; }
+	 
 	void print() const
 	{
 		for (int i{ 0 }; i < m_size; ++i)
@@ -74,49 +75,104 @@ public:
 		}
 	}
 
+	// TODO: Improve?
+	bool hasWon(char piece) const
+	{
+		// Check any row wins
+		for (int row{ 0 }; row < m_size; ++row)
+		{
+			bool wonRow{ true };
+			for (int col{ 0 }; col < m_size; ++col)
+			{
+				if (get({ col, row }) != piece)
+				{
+					wonRow = false;
+					break;
+				}
+			}
+			if (wonRow) return true;
+		}
+
+		// Check any col wins
+		for (int col{ 0 }; col < m_size; ++col)
+		{
+			bool wonCol{ true };
+			for (int row{ 0 }; row < m_size; ++row)
+			{
+				if (get({ col, row }) != piece)
+				{
+					wonCol = false;
+					break;
+				}
+			}
+			if (wonCol) return true;
+		}
+
+		// Check any diagonal wins
+		bool d1{ true };
+		bool d2{ true };
+		for (int i{ 0 }; i < m_size; ++i)
+		{
+			if (get({ i, i }) != piece)
+				d1 = false;
+			if (get({ m_size - 1 - i, i }) != piece)
+				d2 = false;
+			if (!d1 && !d2)
+				break;
+		}
+		return (d1 || d2);
+	}
+
+	// TODO: Input validation
+	//		multiple inputs
+	//		not ints, eof,
+	Coord getCoordFromUser() const
+	{
+		Coord c{};
+		while (true) {
+			while (c.y < 0 || c.y >= m_size)
+			{
+				std::cout << "Input valid row (0-" << m_size - 1 << "): ";
+				std::cin >> c.y;
+			}
+
+			while (c.x < 0 || c.x >= m_size)
+			{
+				std::cout << "Input valid column (0-" << m_size - 1 << "): ";
+				std::cin >> c.x;
+			}
+
+			if (get(c) == '-')
+				break;
+
+			std::cout << "Please enter a cell that hasn't been played. \n";
+		}
+		std::cout << '\n';
+
+		return c;
+	}
+
 };
-
-// TODO: Input validation
-//		multiple inputs
-//		not ints, eof,
-Coord getCoordFromUser()
-{
-	Coord c{};
-
-	std::cout << "Input x coordinate (0-3): ";
-	std::cin >> c.x;
-		
-	std::cout << "Input y coordinate (0-3): ";
-	std::cin >> c.y;
-	std::cout << '\n';
-
-	return c;
-}
 
 int main()
 {
+	const int size{ 3 };
 
-	Game game{ 3 };
+	Game game{ size };
 	bool isX{ true };
-	int count{ 0 };
+	std::cout << " Let's play some tic tac toe! \n \n";
+	
 	game.print();
 
-	while (count < 9)
+	for (int moves{ 0 }; moves < 9; ++moves)
 	{
-		Coord coord{ getCoordFromUser() };
-		game.set(coord, isX ? 'X' : 'O');
+		char piece{ isX ? 'X' : 'O' };
+		std::cout << "======= Player '" << piece << "' Turn! ======= \n";
+		Move move{game.getCoordFromUser(), piece };
+		game.set(move);
 		game.print();
 		isX = !isX;
-		++count;
 	}
-	game.print();
-
-	//game.set(Coord { 0, 0 }, 'X');
-	//game.set({ 1, 1 }, 'O');
-	//game.set({ 2, 0 }, 'X');
-	//game.set({ 0, 1 }, 'O');
-
-	game.print();
 
 	return 0;
 }
