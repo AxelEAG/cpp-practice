@@ -21,10 +21,21 @@
     <ClCompile Include="inputValidation.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="board.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="inputValidation.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="coord.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="board.h">
+      <Filter>Header Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

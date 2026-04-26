@@ -20,7 +20,7 @@ public:
 
 	void set(Coord coord, char piece) { m_grid[coord.y][coord.x] = piece; }
 	char get(Coord coord) const { return m_grid[coord.y][coord.x]; }
-	bool isEmpty(Coord coord) const { return (m_grid[coord.y - 1][coord.x - 1] == '-'); }
+	bool isEmpty(Coord coord) const { return (m_grid[coord.y][coord.x] == '-'); }
 	int  getSize() const { return m_size; }
 
 	void print() const;

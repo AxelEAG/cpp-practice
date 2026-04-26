@@ -35,8 +35,8 @@ static Coord getCoordFromUser(Board& board, int size)
 	int y{};
 
 	while (true) {
-		x = getValidInput("row", size);
-		y = getValidInput("column", size);
+		y = getValidInput("row", size);
+		x = getValidInput("column", size);
 
 		if (board.isEmpty({ x - 1, y - 1 }))
 			break;
@@ -123,6 +123,9 @@ bool play(Board& board)
 	if (isTied) std::cout << "Uh oh, it's a tie! \n \n";
 
 	char keepPlaying{ getValidAnswer("Would you like to play again (y/n)? ") == 'y' };
+
+	if (!keepPlaying)
+		std::cout << "Thank you for playing! \n";
 
 	return keepPlaying;
 }
