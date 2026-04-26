@@ -35,7 +35,6 @@ static bool clearUnextractedInput()
 	return true;
 }
 
-
 int getValidInput(std::string_view type, int max, int min = 1)
 {
 	while (true)
@@ -51,3 +50,19 @@ int getValidInput(std::string_view type, int max, int min = 1)
 	}
 
 }
+
+int getValidAnswer()
+{
+	while (true)
+	{
+		std::cout << "Would you like to play again (y/n)? ";
+		char answer{};
+		std::cin >> answer;
+		if (!clearFailedExtraction() && !clearUnextractedInput() && (answer == 'y' || answer == 'n'))
+			return answer;
+
+		std::cout << "Please enter a vaild answer (y/n). \n";
+	}
+
+}
+
