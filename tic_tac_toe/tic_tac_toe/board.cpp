@@ -29,8 +29,9 @@ void Board::reset()
 	}
 }
 
-static Coord getCoordFromUser(Board& board, int size)
+static Coord getCoordFromUser(Board& board)
 {
+	const int size{ board.getSize() };
 	int x{};
 	int y{};
 
@@ -100,16 +101,17 @@ static bool hasWon(Board& board, char piece)
 
 bool play(Board& board)
 {
+	const int size{ board.getSize() };
+
 	bool isX{ true };
 	bool isTied{ true };
-	int size{ board.getSize() };
 	board.print();
 
 	for (int moves{ 0 }; moves < size * size; ++moves)
 	{
 		char piece{ isX ? 'X' : 'O' };
 		std::cout << "======= Player '" << piece << "' Turn! ======= \n";
-		board.set(getCoordFromUser(board, size), piece);
+		board.set(getCoordFromUser(board), piece);
 		board.print();
 		isX = !isX;
 		if (hasWon(board, piece))
