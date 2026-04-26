@@ -122,7 +122,7 @@ bool play(Board& board)
 
 	if (isTied) std::cout << "Uh oh, it's a tie! \n \n";
 
-	char keepPlaying{ getValidAnswer() };
+	char keepPlaying{ getValidAnswer("Would you like to play again (y/n)? ") == 'y' };
 
-	return keepPlaying == 'y' ? true : false;
+	return keepPlaying;
 }

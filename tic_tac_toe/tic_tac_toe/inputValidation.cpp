@@ -51,11 +51,11 @@ int getValidInput(std::string_view type, int max, int min = 1)
 
 }
 
-int getValidAnswer()
+int getValidAnswer(std::string_view prompt)
 {
 	while (true)
 	{
-		std::cout << "Would you like to play again (y/n)? ";
+		std::cout << prompt;
 		char answer{};
 		std::cin >> answer;
 		if (!clearFailedExtraction() && !clearUnextractedInput() && (answer == 'y' || answer == 'n'))
