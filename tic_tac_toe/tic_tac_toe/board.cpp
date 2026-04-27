@@ -2,6 +2,8 @@
 #include <string>
 #include "board.h"
 #include "inputValidation.h"
+#include <vector>
+#include <optional>
 
 void Board::print() const
 {
@@ -111,7 +113,12 @@ bool play(Board& board)
 	{
 		char piece{ isX ? 'X' : 'O' };
 		std::cout << "======= Player '" << piece << "' Turn! ======= \n";
-		board.set(getCoordFromUser(board), piece);
+		Coord coord{};
+		if (isX)
+			coord = getCoordFromAI(board, piece);
+		else
+			coord = getCoordFromUser(board);
+		board.set(coord, piece);
 		board.print();
 		isX = !isX;
 		if (hasWon(board, piece))
@@ -130,4 +137,73 @@ bool play(Board& board)
 		std::cout << "Thank you for playing! \n";
 
 	return keepPlaying;
+}
+
+
+// if path leads to x -> returns y : lose -> '-1', draw -> '0', win -> '1'
+int checkPath(Board& board, char piece)
+{
+	// Done, found winning move
+	if (hasWon(board, piece))
+		return 1;
+
+	const char enemyPiece = piece == 'X' ? 'O' : 'X'; // Opposite of AI's piece
+
+	for (int y{ 0 }; y < board.m_size; ++y)
+	{
+		for (int x{ 0 }; x < board.m_size; ++x)
+		{
+			if (!board.isEmpty({ x, y }))
+				continue;
+
+			// Enemy has winning move - avoid path
+			board.m_grid[y][x] = enemyPiece;
+			int res{ checkPath(board, enemyPiece) };
+			if (res == 1)
+			{
+				board.m_grid[y][x] = '-';
+				return -1; // enemy won
+			}
+			//if (hasWon(board, enemyPiece))
+			//	return -1;
+
+			//if (checkPath(board, piece) == 1)
+			//	return 1;
+			board.m_grid[y][x] = '-';
+		}
+	}
+
+	// Couldn't find winning move
+	return 0;
+}
+
+Coord getCoordFromAI(Board& board, char piece)
+{
+
+	Coord randomCoord{};
+	std::optional<Coord> tiedCoord;
+	// DFS of all options
+	for (int y{ 0 }; y < board.m_size; ++y)
+	{
+		for (int x{ 0 }; x < board.m_size; ++x)
+		{
+			if (!board.isEmpty({ x, y }))
+				continue;
+			randomCoord = { x, y };
+
+			board.m_grid[y][x] = piece;
+			int res { checkPath(board, piece)};
+			if (res == 1)
+			{
+				board.m_grid[y][x] = '-';
+				return Coord{ x, y };
+			}
+			if (res == 0) tiedCoord = { x, y };
+			board.m_grid[y][x] = '-';
+		}
+	}
+	
+	return tiedCoord ? *tiedCoord : randomCoord;
+	// TODO: Implement random pick
+	// Coord randomCoord = { 1, 1 };
 }

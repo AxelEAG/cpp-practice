@@ -9,11 +9,11 @@ bool play(Board& board);
 
 int main()
 {
-	const int size{ 3 };
-
-	Board board{ size };
 	std::cout << "Let's play some tic tac toe! \n \n";
-	
+
+	const int size{ 3 };
+	Board board{ size };
+
 	while (play(board))
 	{
 		board.reset();
