@@ -4,6 +4,7 @@
 #include "inputValidation.h"
 #include <vector>
 #include <optional>
+#include <algorithm>
 
 void Board::print() const
 {
@@ -114,10 +115,12 @@ bool play(Board& board)
 		char piece{ isX ? 'X' : 'O' };
 		std::cout << "======= Player '" << piece << "' Turn! ======= \n";
 		Coord coord{};
-		if (isX)
-			coord = getCoordFromAI(board, piece);
-		else
-			coord = getCoordFromUser(board);
+		coord = getCoordFromAI(board, piece);
+
+		//if (isX)
+		//	coord = getCoordFromAI(board, piece);
+		//else
+		//	coord = getCoordFromUser(board);
 		board.set(coord, piece);
 		board.print();
 		isX = !isX;
@@ -139,71 +142,77 @@ bool play(Board& board)
 	return keepPlaying;
 }
 
-
-// if path leads to x -> returns y : lose -> '-1', draw -> '0', win -> '1'
-int checkPath(Board& board, char piece)
+int minimax(Board& board, char currPiece, bool isPiece, int capacity)
 {
-	// Done, found winning move
-	if (hasWon(board, piece))
-		return 1;
+	if (hasWon(board, currPiece))
+		return isPiece ? capacity : -1 * capacity;
 
-	const char enemyPiece = piece == 'X' ? 'O' : 'X'; // Opposite of AI's piece
+	if (capacity == 0)
+		return 0;
 
-	for (int y{ 0 }; y < board.m_size; ++y)
+	int score{};
+	int bestScore{ board.m_size * board.m_size };
+	if (!isPiece) bestScore *= -1;
+	
+	const char oppPiece = currPiece == 'X' ? 'O' : 'X';
+	for (int i{ 0 }; i < 9; ++i)
 	{
-		for (int x{ 0 }; x < board.m_size; ++x)
-		{
-			if (!board.isEmpty({ x, y }))
-				continue;
+		int x{ i % 3 };
+		int y{ i / 3 };
+		if (!board.isEmpty({ x, y }))
+			continue;
 
-			// Enemy has winning move - avoid path
-			board.m_grid[y][x] = enemyPiece;
-			int res{ checkPath(board, enemyPiece) };
-			if (res == 1)
-			{
-				board.m_grid[y][x] = '-';
-				return -1; // enemy won
-			}
-			//if (hasWon(board, enemyPiece))
-			//	return -1;
+		board.m_grid[y][x] = oppPiece;
+		score = minimax(board, oppPiece, !isPiece, capacity - 1);
+		board.m_grid[y][x] = '-';
 
-			//if (checkPath(board, piece) == 1)
-			//	return 1;
-			board.m_grid[y][x] = '-';
-		}
+		bestScore = isPiece ? std::min(score, bestScore) : std::max(score, bestScore);
 	}
 
-	// Couldn't find winning move
-	return 0;
+	return bestScore;
 }
 
 Coord getCoordFromAI(Board& board, char piece)
 {
+	// 9 positions, calculate coord from it
+	// Get score for each of them, pick the highest one
 
-	Coord randomCoord{};
-	std::optional<Coord> tiedCoord;
-	// DFS of all options
-	for (int y{ 0 }; y < board.m_size; ++y)
+	int score{};
+	int bestScore{ -1 * board.m_size * board.m_size }; // Default to worst possible score
+	int idx{ 0 };
+
+	int capacity{ 0 };
+	for (int i{ 0 }; i < 9; ++i)
 	{
-		for (int x{ 0 }; x < board.m_size; ++x)
-		{
-			if (!board.isEmpty({ x, y }))
-				continue;
-			randomCoord = { x, y };
+		int x{ i % 3 };
+		int y{ i / 3 };
+		if (board.isEmpty({ x, y }))
+			capacity += 1;
+	}
 
-			board.m_grid[y][x] = piece;
-			int res { checkPath(board, piece)};
-			if (res == 1)
-			{
-				board.m_grid[y][x] = '-';
-				return Coord{ x, y };
-			}
-			if (res == 0) tiedCoord = { x, y };
-			board.m_grid[y][x] = '-';
+	for (int i{ 0 }; i < 9; ++i)
+	{
+		int x{ i % 3 };
+		int y{ i / 3 };
+		if (!board.isEmpty({ x, y }))
+			continue;
+
+		board.m_grid[y][x] = piece;
+		score = minimax(board, piece, true, capacity - 1);
+		board.m_grid[y][x] = '-';
+
+		if (score > bestScore)
+		{
+			bestScore = score;
+			idx = i;
 		}
 	}
-	
-	return tiedCoord ? *tiedCoord : randomCoord;
-	// TODO: Implement random pick
-	// Coord randomCoord = { 1, 1 };
+
+	return Coord { idx % 3 , idx / 3 };
 }
+
+// How to make AI?
+// Check if there's a winning move
+// If not, begin looking recursively
+//		check if there's a winning move for opponent
+//		
