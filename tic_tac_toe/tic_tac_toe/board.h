@@ -1,8 +1,6 @@
 #ifndef BOARD_H
 #define BOARD_H
-#include "coord.h"
 #include <vector>
-#include <optional>
 
 enum Outcome
 {
@@ -15,32 +13,43 @@ class Board
 {
 private:
 	const int m_size{ 3 };
-	std::vector<std::vector<char>> m_grid
-	{
-		{'O', '-', '-'},
-		{'-', '-', '-'},
-		{'-', '-', '-'}
-	};
+	int m_capacity{m_size * m_size};
+	std::vector<char> m_grid;
+
+	//std::vector<char> m_grid
+	//{
+	//	'O', '-', '-',
+	//	'-', '-', '-',
+	//	'-', '-', '-'
+	//};
 
 public:
 	Board(int size = 3) 
 		: m_size{ size }
-		// , m_grid(m_size, std::vector<char>(m_size, '-'))
+		, m_capacity{ size * size }
+		, m_grid(m_capacity, '-')
 	{}
 
-	void set(Coord coord, char piece) { m_grid[coord.y][coord.x] = piece; }
-	char get(Coord coord) const { return m_grid[coord.y][coord.x]; }
-	bool isEmpty(Coord coord) const { return (m_grid[coord.y][coord.x] == '-'); }
+	void set(int idx, char piece) 
+	{
+		m_grid[idx] = piece; 
+		--m_capacity;
+	}
+	void reset(int idx)
+	{
+		m_grid[idx] = '-';
+		++m_capacity;
+	}
+
+	char get(int idx) const { return m_grid[idx]; }
+	bool isEmpty(int idx) const { return (m_grid[idx] == '-'); }
 	int  getSize() const { return m_size; }
+	int	 getCapacity() const { return m_capacity; }
 
 	void print() const;
 	void reset();
-	friend std::optional<Coord> hasWinningMove(Board& board, char piece);
-	friend Outcome checkPath(Board& board, char piece);
-	friend int minimax(Board& board, char piece, bool isPiece, int capacity);
-	friend Coord getCoordFromAI(Board& board, char piece);
-
-
+	friend int minimax(Board& board, int move, char piece, bool isPiece);
+	friend int getAIMove(Board& board, char piece);
 
 }; 
 
