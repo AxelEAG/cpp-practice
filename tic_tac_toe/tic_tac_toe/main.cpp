@@ -7,8 +7,11 @@
 
 bool play(Board& board);
 
+void testAI();
+
 int main()
 {
+	// testAI();
 	std::cout << "Let's play some tic tac toe! \n \n";
 
 	const int size{ 3 };

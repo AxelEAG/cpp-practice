@@ -130,9 +130,9 @@
     <ClCompile Include="board.cpp" />
     <ClCompile Include="inputValidation.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="test.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="coord.h" />
     <ClInclude Include="inputValidation.h" />
   </ItemGroup>
   <ItemGroup>

@@ -2,13 +2,6 @@
 #define BOARD_H
 #include <vector>
 
-enum Outcome
-{
-	lose = -1,
-	draw = 0,
-	win = 1,
-};
-
 class Board
 {
 private:
@@ -16,19 +9,22 @@ private:
 	int m_capacity{m_size * m_size};
 	std::vector<char> m_grid;
 
-	//std::vector<char> m_grid
-	//{
-	//	'O', '-', '-',
-	//	'-', '-', '-',
-	//	'-', '-', '-'
-	//};
-
 public:
 	Board(int size = 3) 
 		: m_size{ size }
 		, m_capacity{ size * size }
 		, m_grid(m_capacity, '-')
 	{}
+
+	// For testing only, sets up predefined board
+	Board(std::vector<char> grid, int size = 3)
+		: m_size{ size }
+		, m_capacity{ size * size }
+		, m_grid{ grid }
+	{
+		for (int i{ 0 }; i < m_size * m_size; ++i)
+			if (!isEmpty(i)) --m_capacity;
+	}
 
 	void set(int idx, char piece) 
 	{
@@ -48,8 +44,6 @@ public:
 
 	void print() const;
 	void reset();
-	friend int minimax(Board& board, int move, char piece, bool isPiece);
-	friend int getAIMove(Board& board, char piece);
 
 }; 
 

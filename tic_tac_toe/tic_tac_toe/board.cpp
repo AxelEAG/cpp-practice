@@ -64,13 +64,69 @@ static bool moveWins(Board& board, int move)
 
 	for (int i{ 0 }; i < size; ++i)
 	{
-		if (board.get(3 * row + i) != piece)			wonRow = false;
-		if (board.get(3 * i + col) != piece)			wonCol = false;
-		if (inD1 && board.get(3 * i + i) != piece)				wonD1 = false;
-		if (inD2 && board.get(3 * i + (size - 1) - i) != piece)	wonD2 = false;
+		if (board.get(3 * row + i) != piece)					wonRow = false;
+		if (board.get(3 * i + col) != piece)					wonCol = false;
+		if (inD1 && board.get(3 * i + i) != piece)				wonD1  = false;
+		if (inD2 && board.get(3 * i + (size - 1) - i) != piece)	wonD2  = false;
 	}
 
 	return wonRow || wonCol || wonD1 || wonD2;
+}
+
+static int minimax(Board& board, int move, char currPiece, bool isPiece)
+{
+	if (moveWins(board, move))
+		return isPiece ? board.getCapacity() : -1 * board.getCapacity();
+
+	if (board.getCapacity() == 0)
+		return 0;
+
+	int score{};
+	int bestScore{ board.getCapacity() };
+	if (!isPiece) bestScore *= -1;
+
+	const char oppPiece = currPiece == 'X' ? 'O' : 'X';
+	for (int i{ 0 }; i < 9; ++i)
+	{
+		if (!board.isEmpty(i))
+			continue;
+
+		board.set(i, oppPiece);
+		score = minimax(board, i, oppPiece, !isPiece);
+		board.reset(i);
+
+		bestScore = isPiece ? std::min(score, bestScore) : std::max(score, bestScore);
+	}
+
+	return bestScore;
+}
+
+int getAIMove(Board& board, char piece)
+{
+	// 9 positions, calculate coord from it
+	// Get score for each of them, pick the highest one
+
+	int score{};
+	int bestScore{ -1 * board.getCapacity() }; // Default to worst possible score
+	int idx{ 0 };
+
+	for (int i{ 0 }; i < board.getSize() * board.getSize(); ++i)
+	{
+		if (!board.isEmpty(i))
+			continue;
+
+		board.set(i, piece);
+		score = minimax(board, i, piece, true);
+		board.reset(i);
+
+		if (score > bestScore)
+		{
+			bestScore = score;
+			idx = i;
+		}
+	}
+
+	return idx;
 }
 
 bool play(Board& board)
@@ -111,112 +167,4 @@ bool play(Board& board)
 		std::cout << "Thank you for playing! \n";
 
 	return keepPlaying;
-}
-
-static int minimax(Board& board, int move, char currPiece, bool isPiece)
-{
-	if (moveWins(board, move))
-		return isPiece ? board.getCapacity() : -1 * board.getCapacity();
-
-	if (board.getCapacity() == 0)
-		return 0;
-
-	int score{};
-	int bestScore{ board.getCapacity() };
-	if (!isPiece) bestScore *= -1;
-	
-	const char oppPiece = currPiece == 'X' ? 'O' : 'X';
-	for (int i{ 0 }; i < 9; ++i)
-	{
-		if (!board.isEmpty(i))
-			continue;
-
-		board.set(i, oppPiece);
-		score = minimax(board, i, oppPiece, !isPiece);
-		board.reset(i);
-
-		bestScore = isPiece ? std::min(score, bestScore) : std::max(score, bestScore);
-	}
-
-	return bestScore;
-}
-
-int getAIMove(Board& board, char piece)
-{
-	// 9 positions, calculate coord from it
-	// Get score for each of them, pick the highest one
-
-	int score{};
-	int bestScore{ -1 * board.getCapacity()}; // Default to worst possible score
-	int idx{ 0 };
-
-	for (int i{ 0 }; i < board.getSize() * board.getSize(); ++i)
-	{
-		if (!board.isEmpty(i))
-			continue;
-
-		board.set(i, piece);
-		score = minimax(board, i, piece, true);
-		board.reset(i);
-
-		if (score > bestScore)
-		{
-			bestScore = score;
-			idx = i;
-		}
-	}
-
-	return idx;
-}
-
-// TODO: Improve?
-static bool hasWon(Board& board, char piece)
-{
-	const int size{ board.getSize() };
-
-	// Check any row wins
-	for (int row{ 0 }; row < size; ++row)
-	{
-		bool wonRow{ true };
-		for (int col{ 0 }; col < size; ++col)
-		{
-			if (board.get(3 * row + col) != piece)
-			{
-				wonRow = false;
-				break;
-			}
-		}
-		if (wonRow) return true;
-	}
-
-	// Check any col wins
-	for (int col{ 0 }; col < size; ++col)
-	{
-		bool wonCol{ true };
-		for (int row{ 0 }; row < size; ++row)
-		{
-			if (board.get(3 * row + col) != piece)
-			{
-				wonCol = false;
-				break;
-			}
-		}
-		if (wonCol) return true;
-	}
-
-	// Check any diagonal wins
-	bool d1{ true };
-	bool d2{ true };
-	for (int col{ 0 }; col < size; ++col)
-	{
-		bool wonCol{ true };
-		for (int row{ 0 }; row < size; ++row)
-		{
-			if (board.get(3 * row + col) != piece)				d1 = false;
-			if (board.get(3 * row + (size - 1) - col) != piece) d2 = false;
-			if (!d1 && !d2) break;
-		}
-	}
-
-	return (d1 || d2);
 }
